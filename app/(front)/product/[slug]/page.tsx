@@ -1,13 +1,31 @@
-import data from '@/app/lib/data'
+import data from '@/lib/data'
+import AddToCart from '@/components/products/AddToCart'
 import Image from 'next/image'
 import Link from 'next/link'
+import productService from '@/lib/services/productService'
+import { convertDocToObj } from '@/lib/utils'
 
-export default function ProductDeatails({
+export async function generateMetadata({
   params,
 }: {
   params: { slug: string }
 }) {
-  const product = data.products.find((x) => x.slug === params.slug)
+  const product = await productService.getBySlug(params.slug)
+  if (!product) {
+    return { title: 'Товар не найден' }
+  }
+  return {
+    title: product.name,
+    description: product.description,
+  }
+}
+
+export default async function ProductDeatails({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const product = await productService.getBySlug(params.slug)
   if (!product) {
     return <div>Товар не найден</div>
   }
@@ -19,7 +37,7 @@ export default function ProductDeatails({
       <div className="grid md:grid-cols-4 md:gap-3">
         <div className="md:col-span-2">
           <Image
-            src={product.name}
+            src={product.image}
             alt={product.name}
             width={640}
             height={640}
@@ -35,7 +53,6 @@ export default function ProductDeatails({
             <li>
               <h1 className="text-xl">{product.name}</h1>
             </li>
-            <li>{product.brand}</li>
             <li>
               <div className="divider"></div>
             </li>
@@ -53,11 +70,11 @@ export default function ProductDeatails({
             <div className="mb-2 flex justify-between">
               <div>{product.countInStock} в наличии</div>
             </div>
-            <div className="card-actions justify-center">
-              <button className="btn btn-primary w-full" type="button">
-                Добавить в Корзину
-              </button>
-            </div>
+            {product.countInStock !== 0 && (
+              <div className="card-actions justify-center">
+                <AddToCart item={{ ...convertDocToObj(product), qty: 0 }} />
+              </div>
+            )}
           </div>
         </div>
       </div>

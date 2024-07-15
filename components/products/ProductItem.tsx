@@ -1,4 +1,4 @@
-import { Product } from '@/app/lib/models/ProductModel'
+import { Product } from '@/lib/models/ProductModel'
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
