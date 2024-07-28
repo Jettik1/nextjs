@@ -1,5 +1,12 @@
 import mongoose, { mongo } from 'mongoose'
 
+export enum UserRole {
+  Owner = 'owner',
+  Admin = 'admin',
+  Moderator = 'moderator',
+  User = 'user',
+}
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -15,8 +22,8 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
-      type: Boolean,
+    role: {
+      type: UserRole,
       required: true,
       default: false,
     },

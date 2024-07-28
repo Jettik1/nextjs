@@ -1,18 +1,25 @@
 import bcrypt from 'bcryptjs'
+import { UserRole } from './models/UserModel'
 
 const data = {
   users: [
     {
-      name: 'Admin',
+      name: 'Owner',
       email: 'contrakt120@gmail.com',
       password: bcrypt.hashSync('AdminPass'),
-      isAdmin: true,
+      role: UserRole.Owner,
     },
     {
-      name: '1user',
+      name: '1Admin',
       email: 'user@example.com',
       password: bcrypt.hashSync('123456'),
-      isAdmin: true,
+      role: UserRole.Admin,
+    },
+    {
+      name: '2user',
+      email: 'user2@example.com',
+      password: bcrypt.hashSync('123456'),
+      role: UserRole.User,
     },
   ],
   products: [
