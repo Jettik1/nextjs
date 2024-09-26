@@ -2,7 +2,7 @@
 import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 type Inputs = {
@@ -17,6 +17,7 @@ const Form = () => {
   let callbackUrl = params.get('callbackUrl') || '/'
 
   const router = useRouter()
+  const [errorMessage, setErrorMessage] = useState('')
 
   const {
     register,
@@ -37,22 +38,42 @@ const Form = () => {
 
   const formSubmit: SubmitHandler<Inputs> = async (form) => {
     const { email, password } = form
-    signIn('credentials', { email, password })
+    const res = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    })
+
+    if (res && !res.ok) {
+      // Устанавливаем сообщение об ошибке
+      if (res.error === 'CredentialsSignin')
+        setErrorMessage('Неправильная почта или пароль')
+      else setErrorMessage(`Ошибка: ${res.error}`)
+    } else if (res && res.ok) {
+      // Если успешный вход, перенаправляем на callbackUrl
+      router.push(callbackUrl)
+    } else {
+      // Обработка случая, если res undefined (например, произошел сбой)
+      setErrorMessage('Не удалось выполнить вход. Попробуйте снова.')
+    }
   }
 
   return (
     <div className="max-w-sm mx-auto card bg-base my-4">
       <div className="card-body">
         <h1 className="card-title">Войти</h1>
+        {errorMessage && (
+          <div className="alert text-error border-none bg-base-dark-400">
+            {errorMessage}
+          </div>
+        )}
+
         {params.get('error') && (
           <div className="alert text-error border-none bg-base-dark-400">
             {params.get('error') === 'CredentialsSignin'
-              ? 'Неправильная почта или пароль'
+              ? 'Неправильная почта или пароль. Попробуйте снова.'
               : params.get('error')}
           </div>
-        )}
-        {params.get('success') && (
-          <div className="alert text-success">{params.get('success')}</div>
         )}
         <form onSubmit={handleSubmit(formSubmit)}>
           <div className="my-2">

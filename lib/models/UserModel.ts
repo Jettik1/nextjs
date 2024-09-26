@@ -1,11 +1,17 @@
 import mongoose, { mongo } from 'mongoose'
 
 export enum UserRole {
-  Owner = 'owner',
-  Admin = 'admin',
-  Moderator = 'moderator',
-  User = 'user',
+  Owner = 'Owner',
+  Admin = 'Admin',
+  Moderator = 'Moderator',
+  User = 'User',
 }
+
+export const PreferedRoles: UserRole[] = [
+  UserRole.Owner,
+  UserRole.Admin,
+  UserRole.Moderator,
+]
 
 const UserSchema = new mongoose.Schema(
   {
@@ -23,9 +29,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     role: {
-      type: UserRole,
+      type: String,
+      enum: Object.values(UserRole),
       required: true,
-      default: false,
+      default: UserRole.User,
     },
   },
   { timestamps: true }

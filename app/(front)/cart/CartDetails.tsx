@@ -47,7 +47,7 @@ export default function CartDetails() {
                         className="flex items-center"
                       >
                         <Image
-                          src={item.image}
+                          src={item.images[0]}
                           alt={item.name}
                           width={50}
                           height={50}

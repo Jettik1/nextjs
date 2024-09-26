@@ -3,7 +3,7 @@ import dbConnect from './dbConnect'
 import UserModel from './models/UserModel'
 import bcrypt from 'bcryptjs'
 import NextAuth from 'next-auth'
-// import email from 'next-auth/providers/email'
+import { error } from 'console'
 
 export const config = {
   providers: [
@@ -16,7 +16,7 @@ export const config = {
       },
       async authorize(credentials) {
         await dbConnect()
-        if (credentials == null) return null
+        if (!credentials) return null
 
         const user = await UserModel.findOne({ email: credentials.email })
 
@@ -37,19 +37,6 @@ export const config = {
     error: '/signin',
   },
   callbacks: {
-    authorized({ request, auth }: any) {
-      const protectedPaths = [
-        /\/shipping/,
-        /\/payment/,
-        /\/place-orfer/,
-        /\/profile/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ]
-      const { pathname } = request.nextUrl
-      if (protectedPaths.some((p) => p.test(pathname))) return !!auth
-      return true
-    },
     async jwt({ user, trigger, session, token }: any) {
       if (user) {
         token.user = {
@@ -69,7 +56,7 @@ export const config = {
       return token
     },
     async session({ session, token }: any) {
-      if (token) {
+      if (token && token.user) {
         session.user = token.user
       }
       return session
@@ -77,9 +64,7 @@ export const config = {
   },
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth(config)
+// Экспортируем NextAuth как обработчик API
+const handler = NextAuth(config)
+
+export { handler as GET, handler as POST }

@@ -9,7 +9,7 @@ export default function ProductItem({ product }: { product: Product }) {
       <figure>
         <Link href={`/product/${product.slug}`}>
           <Image
-            src={product.image}
+            src={product.images[0]}
             alt={product.name}
             width={300}
             height={300}

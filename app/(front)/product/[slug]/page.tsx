@@ -37,7 +37,7 @@ export default async function ProductDeatails({
       <div className="grid md:grid-cols-4 md:gap-3">
         <div className="md:col-span-2">
           <Image
-            src={product.image}
+            src={product.images[0]}
             alt={product.name}
             width={640}
             height={640}

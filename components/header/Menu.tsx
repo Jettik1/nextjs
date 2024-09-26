@@ -1,6 +1,7 @@
 'use client'
 
 import useCartService from '@/lib/hooks/useCartStore'
+import { PreferedRoles } from '@/lib/models/UserModel'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -17,10 +18,18 @@ const Menu = () => {
   }
 
   const { data: session } = useSession()
+  console.log(session)
 
   return (
     <div>
       <ul className="flex items-stretch">
+        <Link className="btn btn-ghost rounded-btn" href="/dashboard">
+          {session?.user?.role && PreferedRoles.includes(session.user.role) ? (
+            <>Prefer</>
+          ) : (
+            <></>
+          )}
+        </Link>
         <li>
           <Link className="btn btn-ghost rounded-btn" href="/cart">
             Корзина

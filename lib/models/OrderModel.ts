@@ -2,6 +2,6 @@ export type OrderItem = {
   name: string
   slug: string
   qty: number
-  image: string
+  images: [string]
   price: number
 }
