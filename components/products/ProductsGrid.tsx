@@ -92,10 +92,6 @@ export default function ProductsGrid({
 
   const handlePreviousPage = () => {
     const prevPage = page - 1
-    console.log(
-      `Запрашиваем из кэша страницу ${prevPage}`,
-      cachedPages[prevPage]
-    )
     if (prevPage > 0 && cachedPages[prevPage]) {
       setProducts(cachedPages[prevPage]) // Восстанавливаем товары из кэша предыдущей страницы
       setPage(prevPage)

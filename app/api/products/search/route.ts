@@ -6,8 +6,6 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('query') || ''
   const page = Number(searchParams.get('page') || '1')
   const limit = Number(searchParams.get('limit') || '6')
-  console.log('Api layer: ')
-  console.log(`Query: ${query}, Page: ${page}, Limit: ${limit}`)
 
   try {
     const { products, total } = await productService.searchProductsByName(

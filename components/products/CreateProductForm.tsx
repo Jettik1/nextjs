@@ -42,18 +42,15 @@ export default function CreateProductForm() {
 
   const setMainImage = (index: number) => {
     setFormData((prev) => {
-      console.log('Before setMainImage:', formData.images)
       const updatedImages = [...prev.images] as File[]
       const [mainImage] = updatedImages.splice(index, 1) // Убираем выбранное изображение
       updatedImages.unshift(mainImage) // Ставим его первым
-      console.log('After setMainImage:', formData.images)
       return { ...prev, images: updatedImages }
     })
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('Submitting form...')
     setLoading(true)
     setError(null)
     try {
@@ -108,7 +105,6 @@ export default function CreateProductForm() {
         countInStock: 0,
       })
     } catch (err: any) {
-      console.error('Submission error: ', err)
       setError(err.message)
     } finally {
       setLoading(false)

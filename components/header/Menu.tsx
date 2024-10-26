@@ -21,7 +21,6 @@ const Menu = () => {
   }
 
   const { data: session } = useSession()
-  console.log(session)
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
