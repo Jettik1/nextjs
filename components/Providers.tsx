@@ -10,7 +10,7 @@ export default function Providers({
   session: any
 }) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session || undefined}>
       <ClientProviders>{children}</ClientProviders>
     </SessionProvider>
   )

@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { getToken, JWT } from 'next-auth/jwt'
 import { PreferedRoles, UserRole } from '@/lib/models/UserModel'
 
 const secret = process.env.NEXTAUTH_SECRET || 'default secret'
+
+interface myJWT extends JWT {
+  user: {
+    _id: string
+    email: string
+    name: string
+    role: string
+  }
+}
 
 export async function middleware(req: NextRequest) {
   const { pathname }: { pathname: string } = req.nextUrl
@@ -12,12 +21,22 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const token = await getToken({ req, secret })
-  if (!token || !PreferedRoles.includes(token.role as UserRole)) {
-    return NextResponse.json({ message: 'Access denied' }, { status: 403 })
+  const token = (await getToken({ req, secret })) as myJWT
+  if (!token) {
+    console.log('Token is missing')
+    return NextResponse.redirect('/login')
   }
 
-  return NextResponse.next()
+  try {
+    if (!token || !PreferedRoles.includes(token.user.role as UserRole)) {
+      console.log('Token is not access: ', token)
+
+      return NextResponse.json({ message: 'Access denied' }, { status: 403 })
+    }
+  } catch (error) {
+    console.log('Authorization error:', error)
+    return NextResponse.error()
+  }
 }
 
 export const config = {

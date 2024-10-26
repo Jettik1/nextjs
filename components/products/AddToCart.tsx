@@ -4,7 +4,13 @@ import { OrderItem } from '@/lib/models/OrderModel'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function AddToCart({ item }: { item: OrderItem }) {
+export default function AddToCart({
+  item,
+  countInStock,
+}: {
+  item: OrderItem
+  countInStock: number
+}) {
   const router = useRouter()
   const { items, increase, decrease } = useCartService()
   const [existItem, setExistItem] = useState<OrderItem | undefined>()
@@ -13,7 +19,9 @@ export default function AddToCart({ item }: { item: OrderItem }) {
   }, [item, items])
 
   const addToCartHandler = () => {
-    increase(item)
+    if (!existItem || existItem.qty < countInStock) {
+      increase(item)
+    }
   }
   return existItem ? (
     <div>
@@ -21,7 +29,12 @@ export default function AddToCart({ item }: { item: OrderItem }) {
         -
       </button>
       <span className="px-2">{existItem.qty}</span>
-      <button className="btn" type="button" onClick={() => increase(existItem)}>
+      <button
+        className="btn"
+        type="button"
+        onClick={() => increase(existItem)}
+        disabled={existItem.qty >= countInStock}
+      >
         +
       </button>
     </div>

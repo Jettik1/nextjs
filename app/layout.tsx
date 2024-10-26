@@ -18,11 +18,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(config)
+  const session = (await getServerSession(config)) || null
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} px-0 mx-auto max-w-full`}>
         <Providers session={session}>
           <div className="min-h-screen flex flex-col">
             <Header />

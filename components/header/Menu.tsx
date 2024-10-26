@@ -5,10 +5,13 @@ import { PreferedRoles } from '@/lib/models/UserModel'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import SearchBar from './SearchBar'
 
 const Menu = () => {
   const { items } = useCartService()
   const [mounted, setMounted] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -20,17 +23,33 @@ const Menu = () => {
   const { data: session } = useSession()
   console.log(session)
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
   return (
     <div>
-      <ul className="flex items-stretch">
-        <Link className="btn btn-ghost rounded-btn" href="/dashboard">
+      <ul className="flex items-stretch lg:flex">
+        <button
+          className="lg:hidden btn btn-ghost rounded-btn"
+          type="button"
+          onClick={toggleMobileMenu}
+        >
+          ☰
+        </button>
+
+        <Link
+          className="hidden lg:flex btn btn-ghost rounded-btn"
+          href="/dashboard"
+        >
           {session?.user?.role && PreferedRoles.includes(session.user.role) ? (
             <>Prefer</>
           ) : (
             <></>
           )}
         </Link>
-        <li>
+
+        <li className="hidden lg:flex">
           <Link className="btn btn-ghost rounded-btn" href="/cart">
             Корзина
             {mounted && items.length != 0 && (
@@ -40,54 +59,98 @@ const Menu = () => {
             )}
           </Link>
         </li>
+
         {session && session.user ? (
-          <>
-            <li>
-              <div className="dropdown dropdown-bottom drpodown-end">
-                <label tabIndex={0} className="btn btn-ghost rounded-btn">
-                  {session.user.name}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentCollor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                    />
-                  </svg>
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="menu dropdown-content z-[1] p-2 shadow bg-base-dark-300 rounded-box w-52"
-                >
-                  <li onClick={signoutHandler}>
-                    <button type="button" onClick={signoutHandler}>
-                      Выйти
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <button
-                className="btn btn-ghost rounded-btn"
-                type="button"
-                onClick={() => signIn()}
+          <li className="hidden lg:flex">
+            <div className="dropdown dropdown-bottom drpodown-end">
+              <label tabIndex={0} className="btn btn-ghost rounded-btn">
+                {session.user.name}
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content z-[1] p-2 shadow bg-base-dark-300 rounded-box w-25 max-w-full"
               >
-                Войти
-              </button>
-            </li>
-          </>
+                <li onClick={signoutHandler}>
+                  <button type="button" onClick={signoutHandler}>
+                    Выйти
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </li>
+        ) : (
+          <li className="hidden lg:flex">
+            <button
+              className="btn btn-ghost rounded-btn"
+              type="button"
+              onClick={() => signIn()}
+            >
+              Войти
+            </button>
+          </li>
         )}
       </ul>
+
+      {/* Мобильное меню */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-base-dark-300 rounded-lg w-11/12 max-w-md p-5">
+            <button
+              className="btn btn-sm btn-ghost rounded-btn mb-5"
+              onClick={toggleMobileMenu}
+            >
+              ✕
+            </button>
+            <div>{session?.user.name}</div>
+            <ul className="menu">
+              <li>
+                <SearchBar onClose={() => setIsMobileMenuOpen(false)} />
+              </li>
+              {session?.user?.role &&
+              PreferedRoles.includes(session.user.role) ? (
+                <li>
+                  <Link href="/dashboard" onClick={toggleMobileMenu}>
+                    <>Admin Panel</>
+                  </Link>
+                </li>
+              ) : null}
+              <li>
+                <Link href="/cart" onClick={() => setIsMobileMenuOpen(false)}>
+                  Корзина
+                  {mounted && items.length != 0 && (
+                    <div className="badge badge-secondary">
+                      {items.reduce((a, c) => a + c.qty, 0)}{' '}
+                    </div>
+                  )}
+                </Link>
+              </li>
+              {session && session.user ? (
+                <li onClick={signoutHandler}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signoutHandler()
+                      toggleMobileMenu()
+                    }}
+                  >
+                    Выйти
+                  </button>
+                </li>
+              ) : (
+                <li>
+                  <button
+                    className="btn btn-ghost rounded-btn"
+                    type="button"
+                    onClick={() => signIn()}
+                  >
+                    Войти
+                  </button>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
