@@ -28,9 +28,6 @@ export async function POST(req: NextRequest) {
     const savedImages: string[] = []
 
     for (const image of images) {
-      console.log('Тип изображения:', typeof image)
-      console.log('Инстанс типа File:', image instanceof File)
-      console.log('Данные изображения:', image)
       if (image instanceof File) {
         const arrayBuffer = await image.arrayBuffer()
         const buffer = new Uint8Array(arrayBuffer) // Преобразуем к Uint8Array

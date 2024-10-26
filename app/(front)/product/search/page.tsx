@@ -21,7 +21,6 @@ export default async function SearchPage({
     1,
     6
   )
-  console.log(products)
 
   return (
     <Suspense fallback={<Spinner />}>
