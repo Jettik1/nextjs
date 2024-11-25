@@ -18,6 +18,14 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+input {
+  @apply bg-secondary text-white p-2 rounded;
+}
+
+input:focus {
+  @apply bg-gray-600; /* Пример фокуса с серым фоном */
+}
+
 .btn {
   text-transform: none;
 }

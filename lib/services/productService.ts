@@ -4,10 +4,11 @@ import ProductModel, { Product } from '../models/ProductModel'
 import slugify from 'slugify'
 import { convertDocToObj } from '../utils'
 import path from 'path'
+import { saveFiles } from '../fileUtils'
 
 export const revalidate = 3600
 
-function withConvertToObj<T>(
+function withConvertToObj<T extends Product | Product[] | null>(
   fn: (...args: any[]) => Promise<T>
 ): (...args: any[]) => Promise<T> {
   return async (...args: any[]) => {
@@ -59,17 +60,18 @@ const searchProductsByName = async (
   }
 }
 
-//???
-
-const getLatest = cache(async () => {
+const getLatest = cache(async (): Promise<Product[] | null> => {
   await dbConnect()
-  const products = await ProductModel.find({}).sort({ _id: -1 }).limit(4).lean()
+  const products = await ProductModel.find({})
+    .sort({ _id: -1 })
+    .limit(4)
+    .lean<Product[]>()
   return products
 })
 
-const getBySlug = cache(async (slug: string) => {
+const getBySlug = cache(async (slug: string): Promise<Product | null> => {
   await dbConnect()
-  const product = await ProductModel.findOne({ slug }).lean()
+  const product = await ProductModel.findOne({ slug }).lean<Product>()
   return product
 })
 
@@ -91,25 +93,39 @@ const deleteProductBySlug = async (slug: string) => {
   await dbConnect()
   const deletedProduct = await ProductModel.findOneAndDelete({ slug })
   if (!deletedProduct) {
-    throw new Error(`Product with slug ${slug} not found`)
+    throw new Error(`Товар со слагом: "${slug}" не найден`)
   }
   return deletedProduct
 }
 
 const updateProductBySlug = async (
   slug: string,
-  updateData: Partial<Product>
-) => {
+  updateData: Partial<Product>,
+  newImages?: File[]
+): Promise<Product> => {
   await dbConnect()
 
+  // Сохраняем новые изображения, если они переданы
+  const savedImages = newImages ? await saveFiles(newImages) : []
+
+  // Объединяем существующие изображения с новыми
+  const combinedImages = [...(updateData.images || []), ...savedImages]
+
+  // Обновляем данные в базе
   const updatedProduct = await ProductModel.findOneAndUpdate(
-    { slug },
-    updateData,
-    { new: true }
+    { slug }, // slug мы не меняем при изменении имени продукта
+    // См. реализацию в app\(front)\product\[slug]\edit\ProductEdit.tsx , строка 74
+    // https://github.com/Jettik1/nextjs/blob/main/app/(front)/product/%5Bslug%5D/edit/ProductEdit.tsx#L74
+    {
+      ...updateData,
+      images: combinedImages, // Указываем все изображения
+      updatedAt: new Date(),
+    },
+    { new: true } // Возвращаем обновленный объект
   )
 
   if (!updatedProduct) {
-    throw new Error(`Product with slug ${slug} not found`)
+    throw new Error(`Товар со слагом "${slug}" не найден`)
   }
 
   return updatedProduct

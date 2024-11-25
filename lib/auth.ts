@@ -3,7 +3,6 @@ import dbConnect from './dbConnect'
 import UserModel from './models/UserModel'
 import bcrypt from 'bcryptjs'
 import NextAuth from 'next-auth'
-import { error } from 'console'
 
 export const config = {
   providers: [

@@ -37,6 +37,7 @@ const config: Config = {
           900: '#050f17', // darkest
         },
         base: 'rgba(40, 40, 40, 1)',
+        secondary: 'rgba(70, 70, 70, 1)',
       },
     },
   },

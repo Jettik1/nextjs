@@ -2,8 +2,11 @@
 
 import AddToCart from '@/components/products/AddToCart'
 import { Product } from '@/lib/models/ProductModel'
+import { UserRole } from '@/lib/models/UserModel'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
 type ProductDetailsProps = {
@@ -11,10 +14,33 @@ type ProductDetailsProps = {
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
+  const { data: session } = useSession()
+  const isAdminOrOwner =
+    session?.user?.role === UserRole.Admin ||
+    session?.user?.role === UserRole.Owner
+  const router = useRouter()
   const images = product.images
   const [selectedImage, setSelectedImage] = useState(images[0])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+  const confirmDeleteProduct = async () => {
+    try {
+      const response = await fetch(`/api/products/${product.slug}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Ошибка при удалении товара')
+      }
+
+      setIsDeleteModalOpen(false)
+      // Добавить редирект
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const openModal = () => {
     setIsModalOpen(true)
@@ -37,7 +63,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         {/* Кнопка "назад к товарам" и информация о товаре */}
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between mb-4">
           <Link href="/" className="mb-4 md:mb-0">
-            назад к товарам
+            <button
+              className="bg-base-dark-blue-600 text-white p-2 rounded flex items-center mt-4"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              ← Назад к товарам
+            </button>
           </Link>
           <div className="md:hidden text-center">
             <h1 className="text-xl">{product.name}</h1>
@@ -157,6 +188,50 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             >
               ✕
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Кнопки для админа/владельца */}
+      {isAdminOrOwner && (
+        <div className="flex space-x-2">
+          {/* Кнопка удаления */}
+          <button
+            className="bg-red-500 text-white p-2 rounded flex items-center mt-4"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            🗑️ Удалить
+          </button>
+
+          {/* Кнопка редактирования */}
+          <button
+            className="bg-zinc-800 text-white p-2 rounded flex items-center mt-4"
+            onClick={() => router.push(`/product/${product.slug}/edit`)}
+          >
+            ✏️ Редактировать
+          </button>
+        </div>
+      )}
+
+      {/* Модальное окно для подтверждения удаления */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <p>Вы уверены, что хотите удалить товар?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                className="bg-red-500 text-white p-2 rounded"
+                onClick={confirmDeleteProduct}
+              >
+                Удалить
+              </button>
+              <button
+                className="p-2 rounded"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                Отмена
+              </button>
+            </div>
           </div>
         </div>
       )}

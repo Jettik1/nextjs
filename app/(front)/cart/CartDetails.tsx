@@ -23,7 +23,10 @@ export default function CartDetails() {
       {items.length === 0 ? (
         <div>
           Корзина пуста{' '}
-          <Link href="/" className="bold">
+          <Link
+            href="/"
+            className="font-bold text-blue-400 hover:text-orange-400 bg-base-dark-300 hover:bg-base-dark-blue-200 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
             В магазин
           </Link>
         </div>
@@ -33,11 +36,18 @@ export default function CartDetails() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Товар</th>
-                  <th>Количество</th>
-                  <th>Цена</th>
+                  <th className="text-base-dark-800 text-left py-2 px-4">
+                    Товар
+                  </th>
+                  <th className="text-base-dark-800 text-left py-2 px-4">
+                    Количество
+                  </th>
+                  <th className="text-base-dark-800 text-left py-2 px-4">
+                    Цена
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 {items.map((item) => (
                   <tr key={item.slug}>
@@ -55,17 +65,17 @@ export default function CartDetails() {
                         <span className="px-2">{item.name}</span>
                       </Link>
                     </td>
-                    <td>
+                    <td className="flex items-center gap-2">
                       <button
-                        className="btn"
+                        className="btn bg-base-200 hover:bg-base-300 text-base-content p-2 rounded"
                         type="button"
                         onClick={() => decrease(item)}
                       >
                         -
                       </button>
-                      <span>{item.qty}</span>
+                      <span className="text-white">{item.qty}</span>
                       <button
-                        className="btn"
+                        className="btn bg-base-200 hover:bg-base-300 text-base-content p-2 rounded"
                         type="button"
                         onClick={() => increase(item)}
                       >

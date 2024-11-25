@@ -4,6 +4,7 @@ import ProductModel from '@/lib/models/ProductModel'
 import productService from '@/lib/services/productService'
 import path from 'path'
 import fs from 'fs/promises'
+import { saveFiles } from '@/lib/fileUtils'
 
 export const config = {
   api: {
@@ -25,22 +26,7 @@ export async function POST(req: NextRequest) {
 
     const images = formData.getAll('images') as File[]
 
-    const savedImages: string[] = []
-
-    for (const image of images) {
-      if (image instanceof File) {
-        const arrayBuffer = await image.arrayBuffer()
-        const buffer = new Uint8Array(arrayBuffer) // Преобразуем к Uint8Array
-        const fileName = `${Date.now()}-${image.name}`
-        const filePath = path.join(process.cwd(), 'public/images', fileName)
-        // Сохраняем файл в директорию
-        fs.writeFile(filePath, buffer) // ?
-        savedImages.push(`/images/${fileName}`)
-      } else {
-        console.log('Неизвестный тип изображения:', image)
-        console.log('Images:', images)
-      }
-    }
+    const savedImages = await saveFiles(images)
 
     await dbConnect()
 
