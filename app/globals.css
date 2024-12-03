@@ -23,9 +23,17 @@ input {
 }
 
 input:focus {
-  @apply bg-gray-600; /* Пример фокуса с серым фоном */
+  @apply bg-gray-600;
 }
 
 .btn {
   text-transform: none;
+}
+
+.modal {
+  @apply fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50;
+}
+
+.modal-content {
+  @apply bg-gray-800 text-gray-500 rounded-lg p-6 shadow-lg max-w-md w-full;
 }

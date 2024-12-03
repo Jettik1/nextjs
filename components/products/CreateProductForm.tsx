@@ -1,11 +1,15 @@
 'use client'
-import { debounce } from '@/lib/utils'
 import { useMemo, useState } from 'react'
 import { ProductInput, validateProductData } from '@/lib/validation'
 import slugify from 'slugify'
 import styles from '@/components/styles.module.css'
-import { number } from 'zod'
 import Image from 'next/image'
+import CategorySelector from './CategorySelector'
+
+type Option = {
+  label: string
+  value: string
+}
 
 export default function CreateProductForm() {
   const [formData, setFormData] = useState<ProductInput>({
@@ -14,7 +18,7 @@ export default function CreateProductForm() {
     price: 0,
     countInStock: 0,
     description: '',
-    category: '',
+    categories: [] as string[],
   })
   //const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
@@ -42,7 +46,8 @@ export default function CreateProductForm() {
 
   const setMainImage = (index: number) => {
     setFormData((prev) => {
-      const updatedImages = [...prev.images] as File[]
+      const images = prev.images ?? []
+      const updatedImages = [...images] as File[]
       const [mainImage] = updatedImages.splice(index, 1) // Убираем выбранное изображение
       updatedImages.unshift(mainImage) // Ставим его первым
       return { ...prev, images: updatedImages }
@@ -53,14 +58,19 @@ export default function CreateProductForm() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+
     try {
       // Автоматически создаём slug из названия
       const slug = slugify(formData.name, { lower: true })
 
+      // Преобразуем данные для отправки
       const preparedData: ProductInput = {
         ...formData,
         price: Number(formData.price),
         countInStock: Number(formData.countInStock),
+        categories: formData.categories.map((category) =>
+          category.trim().toLowerCase()
+        ),
       }
 
       // Валидация данных перед отправкой
@@ -68,27 +78,34 @@ export default function CreateProductForm() {
 
       const productDataToSend = new FormData()
 
+      // Добавляем все поля, кроме images, в FormData
       Object.entries(preparedData).forEach(([key, value]) => {
-        // Пропускаем поле images, так как для него отдельная логика
         if (key === 'images') return
 
-        // Преобразуем числа в строки для FormData
-        if (typeof value === 'number') {
+        if (Array.isArray(value)) {
+          // Для массива (categories) добавляем каждое значение
+          value.forEach((item) => productDataToSend.append(key, item))
+        } else if (typeof value === 'number') {
           productDataToSend.append(key, value.toString())
         } else {
           productDataToSend.append(key, value as string)
         }
       })
 
+      // Добавляем slug отдельно
       productDataToSend.append('slug', slug)
 
-      formData.images.forEach((image) => {
-        productDataToSend.append('images', image) // Добавляем файлы как объекты
-      })
+      // Добавляем изображения
+      if (formData.images) {
+        formData.images.forEach((image) => {
+          productDataToSend.append('images', image) // Добавляем файлы
+        })
+      }
 
+      // Отправляем запрос
       const response = await fetch('/api/products', {
         method: 'POST',
-        body: productDataToSend, // Передаём FormData без сериализации
+        body: productDataToSend,
       })
 
       if (!response.ok) {
@@ -101,7 +118,7 @@ export default function CreateProductForm() {
         images: [],
         price: 0,
         description: '',
-        category: '',
+        categories: [], // Сбрасываем массив категорий
         countInStock: 0,
       })
     } catch (err: any) {
@@ -110,6 +127,17 @@ export default function CreateProductForm() {
       setLoading(false)
     }
   }
+
+  // ----
+
+  /* const loadCategories = async (inputValue: string) => {
+    const response = await fetch(`/api/categories?search=${inputValue}`)
+    const categories = await response.json()
+    return categories.map((category: { name: string }) => ({
+      label: category.name,
+      value: category.name,
+    }))
+  } */
 
   return (
     <div className="sm:w-full md:w-2/3 lg:w-1/2">
@@ -151,12 +179,17 @@ export default function CreateProductForm() {
           placeholder="Количество товара"
         />
 
-        <input
-          className={styles.input}
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          placeholder="Категория"
+        <CategorySelector
+          value={formData.categories.map((category) => ({
+            value: category,
+            label: category,
+          }))}
+          onChange={(categories) =>
+            setFormData((prev) => ({
+              ...prev,
+              categories: categories.map((c) => c.value),
+            }))
+          }
         />
 
         <input
@@ -167,24 +200,28 @@ export default function CreateProductForm() {
           onChange={handleImageChange}
         />
 
-        {formData.images.map((file, index) => (
-          <div key={index}>
-            <Image
-              src={URL.createObjectURL(file)}
-              alt={`Image ${index}`}
-              width={200}
-              height={200}
-              objectFit="cover" // Пропорционально вписываем изображение
-            />
-            <input
-              type="radio"
-              name="mainImage"
-              checked={index === 0}
-              onChange={() => setMainImage(index)}
-            />
-            <label>Выбрать как заглавную</label>
-          </div>
-        ))}
+        {formData.images ? (
+          formData.images.map((file, index) => (
+            <div key={index}>
+              <Image
+                src={URL.createObjectURL(file)}
+                alt={`Image ${index}`}
+                width={200}
+                height={200}
+                objectFit="cover" // Пропорционально вписываем изображение
+              />
+              <input
+                type="radio"
+                name="mainImage"
+                checked={index === 0}
+                onChange={() => setMainImage(index)}
+              />
+              <label>Выбрать как заглавную</label>
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
 
         <button className={styles.button} type="submit">
           {loading ? 'Загрузка...' : 'Создать товар'}

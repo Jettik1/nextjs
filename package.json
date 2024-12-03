@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@emotion/styled": "^11.11.0",
+    "@types/react-select": "^5.0.1",
     "aws4": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "formidable": "^3.5.1",
@@ -22,6 +23,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.4",
     "react-hot-toast": "^2.4.1",
+    "react-select": "^5.8.3",
     "slugify": "^1.6.6",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"

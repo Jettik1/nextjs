@@ -31,6 +31,19 @@ const getLatestWithProps = cache(async (page: number, limit: number) => {
     .lean()
 
   const convertedProducts = products.map(convertDocToObj)
+  /* console.log('Converted Products:', JSON.stringify(convertedProducts, null, 2))
+  convertedProducts.forEach((product) => {
+    if (
+      Object.keys(product).some(
+        (key) =>
+          typeof product[key] === 'object' &&
+          typeof product[key]?.toJSON === 'function'
+      )
+    ) {
+      console.warn('Found a problematic object with toJSON:', product)
+    }
+  }) */
+
   return { products: convertedProducts }
 })
 
@@ -131,6 +144,34 @@ const updateProductBySlug = async (
   return updatedProduct
 }
 
+const getByCategoryId = async (
+  categoryId: string,
+  page: number,
+  limit: number
+) => {
+  await dbConnect()
+  const skip = (page - 1) * limit
+
+  // Используем `$in` для проверки, что категория содержится в массиве
+  const products = await ProductModel.find({
+    categories: { $in: [categoryId] },
+  })
+    .skip(skip)
+    .limit(limit)
+    .lean()
+
+  const total = await ProductModel.countDocuments({
+    categories: { $in: [categoryId] },
+  })
+
+  return {
+    products: products.map(convertDocToObj),
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+  }
+}
+
 const productService = {
   getLatest: withConvertToObj(getLatest),
   getBySlug: withConvertToObj(getBySlug),
@@ -139,5 +180,6 @@ const productService = {
   updateProductBySlug: withConvertToObj(updateProductBySlug),
   getLatestWithProps,
   searchProductsByName,
+  getByCategoryId,
 }
 export default productService

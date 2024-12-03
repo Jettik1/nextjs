@@ -1,7 +1,9 @@
 // app/api/products/[slug]/route.ts
 import dbConnect from '@/lib/dbConnect'
 import { saveFiles } from '@/lib/fileUtils'
+import CategoryModel from '@/lib/models/Category'
 import ProductModel from '@/lib/models/ProductModel'
+import { getOrCreateCategories } from '@/lib/services/categoriesService'
 import productService from '@/lib/services/productService'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -48,26 +50,28 @@ export async function PUT(
 ) {
   try {
     const formData = await req.formData()
-
-    // Извлекаем JSON-данные
     const data = JSON.parse(formData.get('data') as string)
 
-    // Извлекаем новые файлы
     const newImages = formData.getAll('newImages') as File[]
+    const savedNewImages = await saveFiles(newImages)
 
-    // Обрабатываем новые изображения
-    const savedNewImages = await saveFiles(newImages) //?
-
-    // Объединяем старые и новые изображения
     const updatedImages = [...data.images, ...savedNewImages]
 
-    // Обновляем данные в базе
-    await productService.updateProductBySlug(params.slug, {
-      ...data,
-      updatedImages,
-    })
+    const categoryIds = await getOrCreateCategories(data.categories)
 
-    return NextResponse.json({ message: 'Продукт успешно обновлен' })
+    const updatedProduct = await productService.updateProductBySlug(
+      params.slug,
+      {
+        ...data,
+        images: updatedImages,
+        categories: categoryIds,
+      }
+    )
+
+    return NextResponse.json({
+      product: updatedProduct,
+      message: 'Продукт успешно обновлен',
+    })
   } catch (error) {
     console.error(error)
     return NextResponse.json(

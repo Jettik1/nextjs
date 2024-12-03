@@ -2,14 +2,16 @@
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import { validateProductData } from '@/lib/validation'
-import slugify from 'slugify'
 import { useRouter } from 'next/navigation'
 import { Product } from '@/lib/models/ProductModel'
 import Image from 'next/image'
+import CategorySelector from '@/components/products/CategorySelector'
 
 type ProductEditProps = {
   product: Product
 }
+
+type Option = { value: string; label: string }
 
 const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
   const router = useRouter()
@@ -19,18 +21,21 @@ const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
     images: product.images,
     price: product.price,
     description: product.description,
-    category: product.category,
+    categories: product.categories,
     countInStock: product.countInStock,
   })
 
   const [newImages, setNewImages] = useState<File[]>([])
+
+  const [categoryOptions, setCategoryOptions] = useState<Option[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<Option[]>([])
 
   // Объект с русскими названиями полей
   const fieldLabels: Record<string, string> = {
     name: 'Название',
     price: 'Цена',
     description: 'Описание',
-    category: 'Категория',
+    categories: 'Категории',
     countInStock: 'Количество на складе',
   }
 
@@ -114,20 +119,68 @@ const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
     }
   }, [newImages])
 
+  // ---
+
+  const handleCategoryChange = (categories: Option[]) => {
+    setSelectedCategories(categories) // Обновляем для UI
+    setFormData((prev) => ({
+      ...prev,
+      categories: categories.map((c) => c.value), // Подготавливаем для отправки
+    }))
+  }
+
+  // Загрузка категорий по ID продукта
+  useEffect(() => {
+    const fetchCategoryNames = async () => {
+      try {
+        const response = await fetch('/api/categories') // API для получения всех категорий
+        const allCategories: { _id: string; name: string }[] =
+          await response.json()
+
+        // Преобразуем ID категорий из продукта в формат { value, label }
+        const mappedCategories = product.categories
+          .map((categoryId) =>
+            allCategories.find((category) => category._id === categoryId)
+          )
+          .filter((category) => category) // Исключаем несопоставленные ID
+          .map((category) => ({
+            value: category!._id,
+            label: category!.name,
+          }))
+
+        setSelectedCategories(mappedCategories)
+      } catch (err) {
+        console.error('Ошибка загрузки категорий:', err)
+      }
+    }
+
+    fetchCategoryNames()
+  }, [product.categories])
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {Object.entries(fieldLabels).map(([field, label]) => (
         <label key={field} className="flex flex-col">
           {label}:
-          <input
-            type={
-              field === 'price' || field === 'countInStock' ? 'number' : 'text'
-            }
-            name={field}
-            value={formData[field as keyof typeof formData] || ''}
-            onChange={handleInputChange}
-            className="bg-secondary p-2 rounded-md text-base-content"
-          />
+          {field === 'categories' ? (
+            <CategorySelector
+              defaultValue={selectedCategories}
+              value={selectedCategories}
+              onChange={handleCategoryChange}
+            />
+          ) : (
+            <input
+              type={
+                field === 'price' || field === 'countInStock'
+                  ? 'number'
+                  : 'text'
+              }
+              name={field}
+              value={formData[field as keyof typeof formData] || ''}
+              onChange={handleInputChange}
+              className="bg-secondary p-2 rounded-md text-white"
+            />
+          )}
         </label>
       ))}
 

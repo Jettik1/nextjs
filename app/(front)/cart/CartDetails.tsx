@@ -20,6 +20,16 @@ export default function CartDetails() {
   return (
     <>
       <h1 className="py-4 text-2xl">Корзина покупок</h1>
+      <p className="bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+        В настоящее время покупка онлайн недоступна, свяжитесь с нами по
+        телефону{' '}
+        <a
+          href={`tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER}`}
+          className="btn btn-primary"
+        >
+          {process.env.NEXT_PUBLIC_PHONE_NUMBER}
+        </a>
+      </p>
       {items.length === 0 ? (
         <div>
           Корзина пуста{' '}
@@ -97,12 +107,12 @@ export default function CartDetails() {
                   </div>
                 </li>
                 <li>
-                  <button
-                    onClick={() => router.push('/shipping')}
+                  <a
+                    href={`tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER}`}
                     className="btn btn-primary w-full"
                   >
-                    Перейти к оформлению
-                  </button>
+                    Позвонить нам {process.env.NEXT_PUBLIC_PHONE_NUMBER}
+                  </a>
                 </li>
               </ul>
             </div>

@@ -36,6 +36,7 @@ export default function ProductsGrid({
       url.searchParams.set('limit', limit.toString())
 
       const res = await fetch(url.toString())
+      console.log(url)
 
       if (!res.ok) {
         console.error('Ошибка при получении товаров:', res.statusText)
@@ -59,7 +60,9 @@ export default function ProductsGrid({
     } else {
       fetchProducts(1).then((data) => {
         setProducts(data)
-        setHasNoMore(data.length < limit)
+        if (!!data) {
+          setHasNoMore(data.length < limit)
+        }
       })
     }
     return () => {
@@ -94,6 +97,8 @@ export default function ProductsGrid({
     const prevPage = page - 1
     if (prevPage > 0 && cachedPages[prevPage]) {
       setProducts(cachedPages[prevPage]) // Восстанавливаем товары из кэша предыдущей страницы
+      /* console.log(`cachedPages[prevPage]: ${cachedPages[prevPage]}`)
+      console.log(cachedPages) */
       setPage(prevPage)
       setHasNoMore(false) // Сбрасываем флаг "Все товары загружены"
     }
@@ -101,11 +106,12 @@ export default function ProductsGrid({
 
   return (
     <>
-      <h2 className="text-2xl py-2">{title}</h2>
+      <h2 className="text-2xl py-2 font-bold mb-4">{title}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductItem key={product.slug} product={product} />
-        ))}
+        {!!products &&
+          products.map((product) => (
+            <ProductItem key={product.slug} product={product} />
+          ))}
       </div>
 
       <div className="flex justify-between space-x-4 mt-4">

@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     countInStock: { type: String, required: true, default: 0 },
     description: { type: String, required: true },
-    category: { type: String, required: true },
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
   },
   {
     timestamps: true,
@@ -27,6 +27,6 @@ export type Product = {
   images: string[]
   price: number
   description: string
-  category: string
+  categories: string[]
   countInStock: number
 }

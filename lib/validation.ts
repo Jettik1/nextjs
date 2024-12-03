@@ -2,14 +2,12 @@ import { z } from 'zod'
 
 export const productSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
-  images: z
-    .array(z.instanceof(File))
-    .min(1, { message: 'At least one image is required' }),
+  images: z.array(z.instanceof(File)).optional(),
   price: z.number().positive(),
   description: z
     .string()
     .min(4, { message: 'Description should be at least 10 characters' }),
-  category: z.string(),
+  categories: z.array(z.string()),
   countInStock: z.number().int().nonnegative(),
 })
 

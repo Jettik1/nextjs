@@ -1,3 +1,4 @@
+import CategoriesList from '@/components/products/CategoriesList'
 import ProductsGrid from '@/components/products/ProductsGrid'
 import { Product } from '@/lib/models/ProductModel'
 import productService from '@/lib/services/productService'
@@ -18,12 +19,20 @@ export default async function Home({
     page || 1,
     limit || 6
   )
+  console.log(products)
 
   return (
-    <ProductsGrid
-      initialProducts={products as Product[]}
-      fetchUrl="/api/products"
-      title="Новейшие товары"
-    />
+    <div className="flex h-full ">
+      <div className="hidden lg:block text-lg w-64 menu bg-base-dark-300 p-4 rounded-box mr-8">
+        <CategoriesList />
+      </div>
+      <div className="flex-grow">
+        <ProductsGrid
+          initialProducts={products as Product[]}
+          fetchUrl="/api/products"
+          title="Новейшие товары"
+        />
+      </div>
+    </div>
   )
 }

@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/dbConnect'
 import ProductModel from '@/lib/models/ProductModel'
 import productService from '@/lib/services/productService'
-import path from 'path'
-import fs from 'fs/promises'
 import { saveFiles } from '@/lib/fileUtils'
+import CategoryModel from '@/lib/models/Category'
 
 export const config = {
   api: {
@@ -17,19 +16,41 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData()
 
     // Получаем данные продукта
-    const name = formData.get('name')
-    const slug = formData.get('slug')
+    const name = formData.get('name') as string
+    const slug = formData.get('slug') as string
     const price = Number(formData.get('price'))
     const countInStock = Number(formData.get('countInStock'))
-    const description = formData.get('description')
-    const category = formData.get('category')
-
+    const description = formData.get('description') as string
+    const categories = formData.getAll('categories') as string[] // Ожидаем массив категорий
     const images = formData.getAll('images') as File[]
 
+    // Сохраняем изображения
     const savedImages = await saveFiles(images)
 
     await dbConnect()
 
+    // Обработка категорий
+    const categoryPromises = categories.map(async (category) => {
+      const normalizedCategory = category.trim().toLowerCase()
+
+      // Проверяем существование категории
+      let existingCategory = await CategoryModel.findOne({
+        name: normalizedCategory,
+      })
+
+      // Если категории нет, создаём новую
+      if (!existingCategory) {
+        existingCategory = await CategoryModel.create({
+          name: normalizedCategory,
+        })
+      }
+
+      return existingCategory._id // Возвращаем ObjectId категории
+    })
+
+    const categoryIds = await Promise.all(categoryPromises)
+
+    // Создаём продукт
     const newProduct = new ProductModel({
       name,
       slug,
@@ -37,7 +58,7 @@ export async function POST(req: NextRequest) {
       images: savedImages,
       countInStock,
       description,
-      category,
+      categories: categoryIds, // Сохраняем ID категорий
     })
 
     await newProduct.save()

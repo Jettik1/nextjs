@@ -3,20 +3,29 @@ export const round2 = (num: number) => {
 }
 
 export const convertDocToObj = (doc: any) => {
-  const plainDoc = doc.toObject ? doc.toObject() : doc // Преобразуем только если это Mongoose документ
-  // чтобы обойтись без преобразования лучше использовать метод .lean() при получении объектов из Mongoose
-  return {
+  const plainDoc = doc.toObject ? doc.toObject() : doc
+
+  const converted = {
     ...plainDoc,
-    _id: plainDoc._id?.toString(), // Преобразуем ObjectId в строку
+    _id: plainDoc._id?.toString(),
     createdAt:
       plainDoc.createdAt instanceof Date
         ? plainDoc.createdAt.toISOString()
-        : plainDoc.createdAt || null, // Проверяем является ли созданная дата объектом Date
+        : plainDoc.createdAt || null,
     updatedAt:
       plainDoc.updatedAt instanceof Date
         ? plainDoc.updatedAt.toISOString()
-        : plainDoc.updatedAt || null, // Проверяем является ли обновлённая дата объектом Date
+        : plainDoc.updatedAt || null,
   }
+
+  // Проверяем, есть ли поля типа Buffer и конвертируем их
+  for (const key in converted) {
+    if (Buffer.isBuffer(converted[key])) {
+      converted[key] = converted[key].toString('base64')
+    }
+  }
+
+  return converted
 }
 
 export function debounce(func: (...args: any[]) => void, wait: number) {

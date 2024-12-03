@@ -1,11 +1,12 @@
 'use client'
 
 import useCartService from '@/lib/hooks/useCartStore'
-import { PreferedRoles } from '@/lib/models/UserModel'
+import { PreferedRoles, UserRole } from '@/lib/models/UserModel'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import SearchBar from './SearchBar'
+import CategoriesList from '../products/CategoriesList'
 
 const Menu = () => {
   const { items } = useCartService()
@@ -37,16 +38,30 @@ const Menu = () => {
           ☰
         </button>
 
-        <Link
-          className="hidden lg:flex btn btn-ghost rounded-btn"
-          href="/dashboard"
-        >
-          {session?.user?.role && PreferedRoles.includes(session.user.role) ? (
-            <>Prefer</>
-          ) : (
-            <></>
-          )}
-        </Link>
+        {session?.user.role === UserRole.Owner ? (
+          <li>
+            <Link
+              className="hidden lg:flex btn btn-ghost rounded-btn"
+              href="/switchRoles"
+            >
+              <>Выбрать роли</>
+            </Link>
+          </li>
+        ) : null}
+
+        <li>
+          <Link
+            className="hidden lg:flex btn btn-ghost rounded-btn"
+            href="/dashboard"
+          >
+            {session?.user?.role &&
+            PreferedRoles.includes(session.user.role) ? (
+              <>Создание товара</>
+            ) : (
+              <></>
+            )}
+          </Link>
+        </li>
 
         <li className="hidden lg:flex">
           <Link className="btn btn-ghost rounded-btn" href="/cart">
@@ -101,15 +116,27 @@ const Menu = () => {
               ✕
             </button>
             <div>{session?.user.name}</div>
-            <ul className="menu">
+            <ul className="menu text-lg">
               <li>
                 <SearchBar onClose={() => setIsMobileMenuOpen(false)} />
               </li>
+              <li>
+                <div className="h-64 overflow-y-auto block lg:hidden">
+                  <CategoriesList />
+                </div>
+              </li>
+              {session?.user.role === UserRole.Owner ? (
+                <li>
+                  <Link href="/switchRoles" onClick={toggleMobileMenu}>
+                    <>Выбрать роли</>
+                  </Link>
+                </li>
+              ) : null}
               {session?.user?.role &&
               PreferedRoles.includes(session.user.role) ? (
                 <li>
                   <Link href="/dashboard" onClick={toggleMobileMenu}>
-                    <>Admin Panel</>
+                    <>Создание товара</>
                   </Link>
                 </li>
               ) : null}
