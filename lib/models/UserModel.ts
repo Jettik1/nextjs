@@ -1,17 +1,5 @@
 import mongoose, { mongo } from 'mongoose'
-
-export enum UserRole {
-  Owner = 'Owner',
-  Admin = 'Admin',
-  Moderator = 'Moderator',
-  User = 'User',
-}
-
-export const PreferedRoles: UserRole[] = [
-  UserRole.Owner,
-  UserRole.Admin,
-  UserRole.Moderator,
-]
+import { UserRole } from '../utils'
 
 const UserSchema = new mongoose.Schema(
   {

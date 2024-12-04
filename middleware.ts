@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken, JWT } from 'next-auth/jwt'
-import { PreferedRoles, UserRole } from '@/lib/models/UserModel'
+import { PreferedRoles, UserRole } from '@/lib/utils'
 
 const secret = process.env.NEXTAUTH_SECRET || 'default secret'
 

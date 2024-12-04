@@ -35,3 +35,16 @@ export function debounce(func: (...args: any[]) => void, wait: number) {
     timeout = setTimeout(() => func(...args), wait)
   }
 }
+
+export enum UserRole {
+  Owner = 'Owner',
+  Admin = 'Admin',
+  Moderator = 'Moderator',
+  User = 'User',
+}
+
+export const PreferedRoles: UserRole[] = [
+  UserRole.Owner,
+  UserRole.Admin,
+  UserRole.Moderator,
+]
