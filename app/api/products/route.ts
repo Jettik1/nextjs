@@ -5,12 +5,6 @@ import productService from '@/lib/services/productService'
 import { saveFiles } from '@/lib/fileUtils'
 import CategoryModel from '@/lib/models/Category'
 
-export const config = {
-  api: {
-    bodyParser: false, // Отключаем встроенный парсер
-  },
-}
-
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData()
