@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { UserRole } from './models/UserModel'
+import { UserRole } from '@/lib/utils'
 
 const data = {
   users: [

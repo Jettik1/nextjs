@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useUsersStore } from '@/lib/hooks/useUsersStore'
-import { UserRole } from '@/lib/models/UserModel'
+import { UserRole } from '@/lib/utils'
 
 const InfiniteUsersList = () => {
   const {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import UserModel, { UserRole } from '@/lib/models/UserModel'
+import UserModel from '@/lib/models/UserModel'
+import { UserRole } from '@/lib/utils'
 import dbConnect from '@/lib/dbConnect'
 
 export async function PATCH(

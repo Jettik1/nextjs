@@ -1,7 +1,7 @@
 'use client'
 
 import useCartService from '@/lib/hooks/useCartStore'
-import { PreferedRoles, UserRole } from '@/lib/models/UserModel'
+import { PreferedRoles, UserRole } from '@/lib/utils'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
