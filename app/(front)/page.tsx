@@ -19,7 +19,6 @@ export default async function Home({
     page || 1,
     limit || 6
   )
-  console.log(products)
 
   return (
     <div className="flex h-full ">

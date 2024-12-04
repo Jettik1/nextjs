@@ -36,7 +36,6 @@ export default function ProductsGrid({
       url.searchParams.set('limit', limit.toString())
 
       const res = await fetch(url.toString())
-      console.log(url)
 
       if (!res.ok) {
         console.error('Ошибка при получении товаров:', res.statusText)
@@ -97,8 +96,6 @@ export default function ProductsGrid({
     const prevPage = page - 1
     if (prevPage > 0 && cachedPages[prevPage]) {
       setProducts(cachedPages[prevPage]) // Восстанавливаем товары из кэша предыдущей страницы
-      /* console.log(`cachedPages[prevPage]: ${cachedPages[prevPage]}`)
-      console.log(cachedPages) */
       setPage(prevPage)
       setHasNoMore(false) // Сбрасываем флаг "Все товары загружены"
     }

@@ -29,8 +29,6 @@ export async function middleware(req: NextRequest) {
 
   try {
     if (!token || !PreferedRoles.includes(token.user.role as UserRole)) {
-      console.log('Token is not access: ', token)
-
       return NextResponse.json({ message: 'Access denied' }, { status: 403 })
     }
   } catch (error) {

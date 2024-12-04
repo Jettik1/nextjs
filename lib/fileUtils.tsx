@@ -18,7 +18,6 @@ export async function saveFiles(images: File[]): Promise<string[]> {
       savedImages.push(`/images/${fileName}`)
     } else {
       console.error('Неизвестный тип изображения:', image)
-      console.log('Images:', images)
     }
   }
 
