@@ -9,7 +9,7 @@ import { config } from '@/lib/auth'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Antiquatiate',
+  title: process.env.NEXT_PUBLIC_APP_NAME || 'Antiquatiate',
   description: 'Modern ECommerce Website',
 }
 

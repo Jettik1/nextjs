@@ -9,7 +9,7 @@ const Header = () => {
       <nav>
         <div className="navbar justify-between bg-zinc-800">
           <Link href="/" className="btn btn-ghost text-lg">
-            Antiquariate
+            {process.env.NEXT_PUBLIC_APP_NAME || `Antiquariate`}
           </Link>
           <div className="hidden lg:block">
             <SearchBar />
