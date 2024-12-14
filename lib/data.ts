@@ -25,71 +25,76 @@ const data = {
   categories: [
     {
       _id: '645f1b23a1c2e3d4567e89ab', // Пример ID, должен соответствовать MongoDB ObjectId
-      name: 'Shirts',
+      name: 'Новогодние игрушки',
     },
     {
       _id: '645f1b23a1c2e3d4567e89ac', // Пример ID
-      name: 'Pants',
+      name: 'Шары',
+    },
+    {
+      _id: '645f1b23a1c2e3d4567e89ad', // Пример ID
+      name: 'Медальоны',
     },
   ],
   products: [
     {
-      name: 'Free Shirt',
-      slug: 'free-shirt',
-      categories: ['645f1b23a1c2e3d4567e89ab'], // ID категории Shirts
-      images: ['/images/shirt1.jpg'],
+      name: 'Шары ручной работы "Хочу в Евпаторию"',
+      slug: 'shari-hochu_v_Evpatoriyu',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ac'],
+      images: ['/images/hochu_v_Evpatoriyu.jpg'],
       price: 7000,
-      countInStock: 20,
-      description: 'A popular shirt',
-      isFeatured: true,
-      banner: '/images/banner1.jpg',
+      countInStock: 10,
+      description:
+        'Шары ручной работы "Хочу в Евпаторию" в ассортименте. 7-14 см. цена от 900 до 1400руб. Ручная рабита. Акрил. Витражные краски, контуры, гели, бусины, стразы.',
     },
     {
-      name: 'Fit Shirt',
-      slug: 'fit-shirt',
-      categories: ['645f1b23a1c2e3d4567e89ab'], // ID категории Shirts
-      images: ['/images/shirt2.jpg'],
-      price: 8000,
-      countInStock: 20,
-      description: 'A popular shirt',
-      isFeatured: true,
-      banner: '/images/banner2.jpg',
+      name: 'Шары, медальоны новогодние "Снегири"',
+      slug: 'shari-snegiri',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ac'],
+      images: ['/images/snegiri.jpg'],
+      price: 1200,
+      countInStock: 10,
+      description:
+        '11-14см. цена 1200-1400. Ручная работа. Витражные краски, контуры, гели, стразы.',
     },
     {
-      name: 'Slim Shirt',
-      slug: 'slim-shirt',
-      categories: ['645f1b23a1c2e3d4567e89ab'], // ID категории Shirts
-      images: ['/images/shirt3.jpg'],
-      price: 9000,
-      countInStock: 20,
-      description: 'A popular shirt',
+      name: 'Шар новогодний "Лаванда"',
+      slug: 'shari-lavanda',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ac'],
+      images: ['/images/Lavanda.jpg'],
+      price: 1000,
+      countInStock: 10,
+      description:
+        'Шар новогодний "Лаванда". диаметр 14 см. Акрил. Ручная работа. Витражные краски, гели, декоративная стеклянная крошка.',
     },
     {
-      name: 'Golf Pants',
+      name: 'Медальон-игрушка на ёлку "Солнечный янтарь"',
       slug: 'golf-pants',
-      categories: ['645f1b23a1c2e3d4567e89ac'], // ID категории Pants
-      images: ['/images/pants1.jpg'],
-      price: 9000,
-      countInStock: 20,
-      description: 'Smart looking pants',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ad'],
+      images: ['/images/Solnecnhy_Yantar.jpg'],
+      price: 1000,
+      countInStock: 10,
+      description:
+        'Полная имитация янтаря. Диаметр 8 см. Ручная работа. Акрил, гели, краски, бусины, натуральный янтарь.',
     },
     {
-      name: 'Fit Pants',
-      slug: 'fit-pants',
-      categories: ['645f1b23a1c2e3d4567e89ac'], // ID категории Pants
-      images: ['/images/pants2.jpg'],
-      price: 9500,
-      countInStock: 20,
-      description: 'A popular pants',
+      name: 'Шар новогодний "к деньгам" "Ирисы, лягушка".',
+      slug: 'shari-k_dengam',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ac'],
+      images: ['/images/k_dengam.jpg'],
+      price: 1500,
+      countInStock: 10,
+      description:
+        'Ручная работа. Акрил. 10 см. Витражные краски, гели. Внутри на подвесе стеклянная лягушка ручной работы.',
     },
     {
-      name: 'Classic Pants',
-      slug: 'classic-pants',
-      categories: ['645f1b23a1c2e3d4567e89ac'], // ID категории Pants
-      images: ['/images/pants3.jpg'],
-      price: 7500,
-      countInStock: 20,
-      description: 'A popular pants',
+      name: 'Медальон на ёлку "Без пяти"',
+      slug: 'medalion-bez_pyati',
+      categories: ['645f1b23a1c2e3d4567e89ab', '645f1b23a1c2e3d4567e89ad'],
+      images: ['/images/bez_pyati.jpg'],
+      price: 600,
+      countInStock: 10,
+      description: 'Ручная работа. Акрил 8 см. Витражные краски, гели, бусины',
     },
   ],
 }
