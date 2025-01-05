@@ -30,27 +30,29 @@ const CategoriesList = ({
   }, [])
 
   return (
-    <aside className="categories-list">
-      <h2 className="text-lg font-bold mb-2">Категории</h2>
-      <ul>
-        {categories.map((category) => {
-          const isActive = category._id === selectedCategoryId
-          return (
-            <li
-              key={category._id}
-              className={`${
-                isActive ? 'font-semibold text-blue-500' : 'text-gray-200'
-              }`}
-              onClick={() => onSelectCategory?.(category._id)}
-            >
-              <Link href={`/product/category/${category._id}`}>
-                {category.name}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-    </aside>
+    <div className="text-lg w-64 menu bg-secondary p-4 rounded-box mr-8">
+      <aside className="categories-list">
+        <h2 className="text-lg font-bold mb-2">Категории</h2>
+        <ul>
+          {categories.map((category) => {
+            const isActive = category._id === selectedCategoryId
+            return (
+              <li
+                key={category._id}
+                className={`${
+                  isActive ? 'font-semibold text-blue-500' : 'text-gray-200'
+                }`}
+                onClick={() => onSelectCategory?.(category._id)}
+              >
+                <Link href={`/product/category/${category._id}`}>
+                  {category.name}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </aside>
+    </div>
   )
 }
 

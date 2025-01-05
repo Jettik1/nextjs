@@ -38,8 +38,8 @@ export default async function CategoryPage({
   return (
     <div className="flex">
       {/* Список категорий */}
-      <div className="hidden lg:block text-lg w-64 menu bg-base-dark-300 p-4 rounded-box">
-        <CategoriesList selectedCategoryId={params.id} />
+      <div className="hidden lg:block">
+        <CategoriesList selectedCategoryId={params.id} /> {/* ??? */}
       </div>
 
       {/* Основной контент */}

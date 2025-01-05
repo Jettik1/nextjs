@@ -22,8 +22,8 @@ export default async function Home({
 
   return (
     <div className="flex h-full ">
-      <div className="hidden lg:block text-lg w-64 menu bg-base-dark-300 p-4 rounded-box mr-8">
-        <CategoriesList />
+      <div className="hidden lg:block">
+        <CategoriesList /> {/* ??? */}
       </div>
       <div className="flex-grow">
         <ProductsGrid

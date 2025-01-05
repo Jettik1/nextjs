@@ -122,7 +122,7 @@ const Menu = () => {
               </li>
               <li>
                 <div className="h-64 overflow-y-auto block lg:hidden">
-                  <CategoriesList />
+                  <CategoriesList /> {/* ??? */}
                 </div>
               </li>
               {session?.user.role === UserRole.Owner ? (
