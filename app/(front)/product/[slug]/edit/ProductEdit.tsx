@@ -77,6 +77,8 @@ const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
       // Создаем объект для валидации
       const validationData = {
         ...formData,
+        countInStock: Number(formData.countInStock),
+        price: Number(formData.price),
         images: newImages, // Используем только новые изображения для валидации
       }
 
@@ -102,7 +104,8 @@ const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
         throw new Error('Не удалось обновить продукт')
       }
 
-      router.push(`/products/${updatedData.slug}`)
+      alert('Данные успешно обновлены, обновите страницу')
+      router.push(`/product/${updatedData.slug}`)
     } catch (err) {
       console.error(err)
       alert('Ошибка: ' + (err as Error).message)
@@ -164,7 +167,8 @@ const ProductEdit: React.FC<ProductEditProps> = ({ product }) => {
           {label}:
           {field === 'categories' ? (
             <CategorySelector
-              defaultValue={selectedCategories}
+              className="mb-8"
+              /* defaultValue={selectedCategories} /// ??? */
               value={selectedCategories}
               onChange={handleCategoryChange}
             />

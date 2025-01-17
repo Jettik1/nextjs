@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ProductInput, validateProductData } from '@/lib/validation'
 import slugify from 'slugify'
 import styles from '@/components/styles.module.css'
@@ -23,6 +23,7 @@ export default function CreateProductForm() {
   //const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedCategories, setSelectedCategories] = useState<Option[]>([])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -128,6 +129,14 @@ export default function CreateProductForm() {
     }
   }
 
+  const handleCategoryChange = (categories: Option[]) => {
+    setSelectedCategories(categories) // Обновляем для UI
+    setFormData((prev) => ({
+      ...prev,
+      categories: categories.map((c) => c.value), // Подготавливаем для отправки
+    }))
+  }
+
   // ----
 
   /* const loadCategories = async (inputValue: string) => {
@@ -180,16 +189,9 @@ export default function CreateProductForm() {
         />
 
         <CategorySelector
-          value={formData.categories.map((category) => ({
-            value: category,
-            label: category,
-          }))}
-          onChange={(categories) =>
-            setFormData((prev) => ({
-              ...prev,
-              categories: categories.map((c) => c.value),
-            }))
-          }
+          className="mb-14"
+          value={selectedCategories}
+          onChange={handleCategoryChange}
         />
 
         <input

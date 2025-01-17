@@ -21,9 +21,16 @@ const CategoriesList = ({
 
   useEffect(() => {
     const fetchCategories = async () => {
+      const cachedCategories = sessionStorage.getItem('categories')
+      if (cachedCategories) {
+        setCategories(JSON.parse(cachedCategories))
+        return
+      }
+
       const response = await fetch('/api/categories')
       const data = await response.json()
       setCategories(data)
+      sessionStorage.setItem('categories', JSON.stringify(data))
     }
 
     fetchCategories()

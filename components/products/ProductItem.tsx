@@ -18,7 +18,7 @@ export default function ProductItem({ product }: { product: Product }) {
         </Link>
       </figure>
       <div className="card-body">
-        <Link href={`product/${product.slug}`}>
+        <Link href={`/product/${product.slug}`}>
           <h2 className="card-title font-normal">{product.name}</h2>
         </Link>
         <div className="card-actions flex items-center justify-between">

@@ -1,34 +1,27 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import CreatableAsyncSelect from 'react-select/async-creatable'
 import { ActionMeta, MultiValue } from 'react-select'
 import { debounce } from '@/lib/utils'
+import reactSelectStyles from './reactSelectStyles'
 
 type Option = { value: string; label: string }
 
 type CategorySelectorProps = {
   defaultValue?: Option[] // Начальные значения
+  className?: string
   value: Option[] // Выбранные категории
   onChange: (categories: Option[]) => void // Обработчик изменения
-}
-
-const customStyles = {
-  multiValueRemove: (base: any, state: any) => ({
-    ...base,
-    color: 'red', // Постоянно видимый красный цвет
-    ':hover': {
-      backgroundColor: 'rgba(255, 0, 0, 0.1)', // Светлый красный фон при наведении
-      color: 'darkred', // Более тёмный красный при наведении
-    },
-  }),
 }
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({
   defaultValue = [],
   value,
   onChange,
+  className = '',
 }) => {
   const [inputValue, setInputValue] = useState('') // Для отслеживания пользовательского ввода
   const [isLoading, setIsLoading] = useState(false)
+  /// value.map((value) => console.log(value))
 
   const handleChange = (
     newValue: MultiValue<Option>,
@@ -38,6 +31,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
   }
 
   const handleInputChange = (newInputValue: string) => {
+    ///console.log('Текущее значение inputValue:', newInputValue)
     setInputValue(newInputValue) // Обновляем значение инпута
   }
 
@@ -62,47 +56,66 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     }
   }
 
-  const loadOptions = useMemo(
-    () =>
-      debounce(async (inputValue: string): Promise<Option[]> => {
+  const loadOptions = useCallback((inputValue: string): Promise<Option[]> => {
+    // Возвращаем Promise для react-select
+    return new Promise((resolve) => {
+      // Дебаунс-функция вызывает API и передаёт результат через resolve
+      debounce(async () => {
+        ///console.log('Загрузка категорий для ввода:', inputValue) // Отладочный лог
         try {
           setIsLoading(true)
           const response = await fetch(`/api/categories?search=${inputValue}`)
+          if (!response.ok) {
+            throw new Error(`Ошибка API: ${response.status}`)
+          }
           const categories = await response.json()
-          return categories.map((category: { _id: string; name: string }) => ({
-            value: category._id,
-            label: category.name,
-          }))
+          ///console.log('Полученные категории:', categories) // Лог результата
+          const refreshCategories = categories.map(
+            (category: { _id: string; name: string }) => ({
+              value: category._id,
+              label: category.name,
+            })
+          )
+          ///console.log(refreshCategories)
+          resolve(refreshCategories)
         } catch (error) {
           console.error('Ошибка загрузки категорий:', error)
-          return []
+          resolve([]) // Возвращаем пустой массив при ошибке
         } finally {
           setIsLoading(false)
         }
-      }, 200), // 200ms задержка
-    []
-  )
+      }, 500)() // Вызов debounce
+    })
+  }, [])
 
   return (
-    <CreatableAsyncSelect
-      isMulti
-      cacheOptions
-      defaultOptions
-      loadOptions={loadOptions}
-      defaultValue={defaultValue} // Устанавливаем начальные значения
-      value={value}
-      onChange={handleChange} // Используем адаптированный обработчик
-      onInputChange={handleInputChange} // Обрабатываем пользовательский ввод
-      onKeyDown={handleKeyDown} // Добавляем категории при нажатии Enter/запятой/пробела
-      inputValue={inputValue} // Управляемое значение инпута
-      placeholder={
-        isLoading
-          ? 'Загрузка категорий...'
-          : 'Выберите категории или создайте новые...'
-      }
-      createOptionPosition="last" // Создание новых категорий всегда в конце списка
-      styles={customStyles}
-    />
+    <div className={`${className}`}>
+      <CreatableAsyncSelect
+        isMulti
+        cacheOptions={false}
+        defaultOptions={false}
+        loadOptions={loadOptions}
+        defaultValue={defaultValue} // Устанавливаем начальные значения
+        value={value}
+        onChange={handleChange} // Используем адаптированный обработчик
+        onInputChange={handleInputChange} // Обрабатываем пользовательский ввод
+        onKeyDown={handleKeyDown} // Добавляем категории при нажатии Enter/запятой/пробела
+        inputValue={inputValue} // Управляемое значение инпута
+        isLoading={isLoading}
+        placeholder={
+          isLoading
+            ? 'Загрузка категорий...'
+            : 'Выберите категории или создайте новые...'
+        }
+        loadingMessage={() =>
+          inputValue.trim()
+            ? `Ищем категории, соответствующие "${inputValue}"...`
+            : 'Загрузка категорий...'
+        }
+        createOptionPosition="last" // Создание новых категорий всегда в конце списка
+        styles={reactSelectStyles}
+      />
+    </div>
   )
 }
 
